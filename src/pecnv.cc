@@ -3,7 +3,6 @@
 #include <process_readmappings.hpp>
 #include <cluster_cnv.hpp>
 #include <mdist.hpp>
-#include <mkgenome.hpp>
 #include <algorithm>
 #include <cstring>
 #include <iostream>
@@ -51,11 +50,6 @@ int main( int argc, char ** argv )
       auto x = strip_argv(argc,argv,argv[1]);
       teclust_main(x - argv, argv);
     }
-  else if( strcmp(argv[1],"mkgenome") == 0 )
-    {
-      auto x = strip_argv(argc,argv,argv[1]);
-      mkgenome_main(x - argv,argv);
-    }
   else if( strcmp(argv[1],"citation") == 0 )
     {
       citation(0);
@@ -78,8 +72,6 @@ void usage(int status)
        << "\tClustering data collected from BAM files:\n"
        << "\t\tcnvclust - perform CNV clustering based on results from process step\n"
        << "\t\tteclust - perform TE clustering based on results from process step\n"
-       << "\tManipulating data files\n"
-       << "\t\tmkgenome - makes a \"genome file\" for bedtools from a fasta input file\n"
        << "\tProviding info about this program:\n"
        << "\t\tversion - print version info to stdout\n"
        << "\t\tcitation - print citation info to stdout\n";
