@@ -295,6 +295,13 @@ process_mapping_params parse_rmappings_args(int argc, char ** argv)
       exit(0);
     }
 
+  if ( rv.bwatype != "aln" )
+    {
+      cerr << "Error: only bwa aln is currently supported.  You requested "
+	   << rv.bwatype << '\n';
+      exit(1);
+    }
+
   if( vm.count("bamfile") )
     {
       if (!file_exists(rv.bamfile.c_str()))
