@@ -9,9 +9,11 @@
 #include <boost/program_options.hpp>
 #include <file_common.hpp>
 #include <common.hpp>
+#include <bed.hpp>
 #include <string>
 #include <sstream>
 #include <unordered_map>
+#include <map>
 #include <zlib.h>
 
 using namespace std;
@@ -81,8 +83,9 @@ int orphan_main(int argc, char ** argv)
   //Pass 2 makes sure that the SAM flags of the mates found in Pass 1 
   //agrees
 
-  ostringstream out;
+  //ostringstream out;
   unsigned recordno=0; //for making the name column in the BED
+  map<string,vector< BED6 > > b6data; //The map will keep the data sorted lexically by chromosome
   while(!reader.eof() && !reader.error())
     {
       bamrecord b = reader.next_record();
@@ -96,38 +99,57 @@ int orphan_main(int argc, char ** argv)
 	    //Write a BED record for the store
 	    {
 	      auto REF = reader.ref_cbegin() + itr->second.refid();
-	      out << REF->first << '\t'
-		  << itr->second.pos() << '\t'
-		  << (itr->second.pos() + alignment_length(itr->second)) << '\t'
-		  << sampleid << "_orphan" << recordno++ << '\t'
-		  << itr->second.mapq() << '\t'
-		  << ( itr->second.flag().qstrand ? '-' : '+' ) << '\n';
+	      b6data[REF->first].emplace_back( BED6(REF->first,
+						    itr->second.pos(),
+						    itr->second.pos() + alignment_length(itr->second),
+						    string(sampleid + "_orphan" + to_string(recordno++)),
+						    itr->second.mapq(),
+						    ( itr->second.flag().qstrand ? '-' : '+' ) ) );
 	    }
 	}
     }
 
+  //Sort the data w/in chromosome
+  for( auto i = b6data.begin() ; i != b6data.end() ; ++i )
+    {
+      sort(i->second.begin(),i->second.end(),
+	   [](const BED6 & lhs, const BED6 & rhs) {
+	     return lhs.start < rhs.start;
+	   } );
+    }
+
   if( outfile == "stdout" )
     {
-      cout << out.str();
+      for( auto i = b6data.begin() ; i != b6data.end() ; ++i )
+	{
+	  copy(i->second.begin(),i->second.end(),
+	       ostream_iterator<BED6>(cout,"\n"));
+	}
     }
   else
     {
+      ostringstream out;
+      for( auto i = b6data.begin() ; i != b6data.end() ; ++i )
+	{
+	  copy(i->second.begin(),i->second.end(),
+	       ostream_iterator<BED6>(out,"\n"));
+	}
       gzFile gzout = gzopen(outfile.c_str(),"w");
       if(gzout == NULL)
-	{
-	  cerr << "Error: could not open "
-	       << outfile
-	       << " for writing at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
+  	{
+  	  cerr << "Error: could not open "
+  	       << outfile
+  	       << " for writing at line " << __LINE__ 
+  	       << " of " << __FILE__ << '\n';
+  	  exit(1);
+  	}
       if( gzwrite( gzout, out.str().c_str(), out.str().size() ) <= 0 )
-	{
-	  cerr << "Error: gzwrite error at line "
-	       << __LINE__ << " of "
-	       << __FILE__ << '\n';
-	  exit(1);
-	}
+  	{
+  	  cerr << "Error: gzwrite error at line "
+  	       << __LINE__ << " of "
+  	       << __FILE__ << '\n';
+  	  exit(1);
+  	}
       gzclose(gzout);
     }
   return 0;
