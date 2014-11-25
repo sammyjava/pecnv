@@ -309,6 +309,7 @@ process_mapping_params parse_rmappings_args(int argc, char ** argv)
 	  cerr << "Error: "
 	       << rv.bamfile
 	       << " does not exist\n";
+	  exit(1);
 	}
     }
 
