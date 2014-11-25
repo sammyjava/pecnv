@@ -134,7 +134,7 @@ string toSAM(const bamrecord & b,
 
 struct process_mapping_params
 {
-  string bamfile,structural_base,um_base;
+  string bamfile,structural_base,um_base,bwatype;
 };
 
 process_mapping_params parse_rmappings_args(int argc, char ** argv);
@@ -271,6 +271,7 @@ process_mapping_params parse_rmappings_args(int argc, char ** argv)
     ("bamfile,b",value<string>(&rv.bamfile),"BAM file name (required)")
     ("structural,s",value<string>(&rv.structural_base),"Prefix for output files names for divergent, parallel, unlinked reads (required)")
     ("umulti,u",value<string>(&rv.um_base),"Prefix for output file names for unique/repetitive read pairs")
+    ("bwatype,B",value<string>(&rv.bwatype)->default_value("aln"),"Method used for bwa.  Currently, only \"bwa aln\" output is supported")
     ;
 
   variables_map vm;
