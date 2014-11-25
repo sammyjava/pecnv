@@ -20,11 +20,13 @@ using namespace std;
 using namespace Sequence;
 using namespace boost::program_options;
 
+void help();
+
 int orphan_main(int argc, char ** argv)
 {
   string bamfile,outfile,sampleid;
 
-  options_description desc("pecnv orphan: extract orphaned reads from a BAM file.");
+  options_description desc("pecnv orphan: extract orphaned reads from a BAM file:");
   desc.add_options()
     ("help,h","Produce help message")
     ("bamfile,b",value<string>(&bamfile),"BAM file to scan")
@@ -36,8 +38,13 @@ int orphan_main(int argc, char ** argv)
   store(parse_command_line(argc, argv, desc), vm);
   notify(vm);
 
+  if( vm.count("help") )
+    {
+      cout << desc << '\n';
+      help();
+      return 0;
+    }
   if ( argc == 1 ||
-       vm.count("help") ||
        !vm.count("bamfile") ||
        !vm.count("outfile") )
     {
@@ -84,7 +91,6 @@ int orphan_main(int argc, char ** argv)
   //agrees
 
   //ostringstream out;
-  unsigned recordno=0; //for making the name column in the BED
   map<string,vector< BED6 > > b6data; //The map will keep the data sorted lexically by chromosome
   while(!reader.eof() && !reader.error())
     {
@@ -102,7 +108,7 @@ int orphan_main(int argc, char ** argv)
 	      b6data[REF->first].emplace_back( BED6(REF->first,
 						    itr->second.pos(),
 						    itr->second.pos() + alignment_length(itr->second),
-						    string(sampleid + "_orphan" + to_string(recordno++)),
+						    string(sampleid + "_" + editRname(itr->second.read_name())),
 						    itr->second.mapq(),
 						    ( itr->second.flag().qstrand ? '-' : '+' ) ) );
 	    }
@@ -153,4 +159,13 @@ int orphan_main(int argc, char ** argv)
       gzclose(gzout);
     }
   return 0;
+}
+
+
+void help()
+{
+  cout << "The output will be a 6-column BED format.\n"
+       << "The score is the mapping quality of the read.\n"
+       << "The name column is a concatenation of the sample ID label\n"
+       << "and the read name prefix.\n";
 }
