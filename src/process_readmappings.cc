@@ -138,12 +138,24 @@ struct process_mapping_params
 };
 
 process_mapping_params parse_rmappings_args(int argc, char ** argv);
+int process_aln( const process_mapping_params & pars );
 
 int process_readmappings_main(int argc, char ** argv)
 {
   process_mapping_params pars = parse_rmappings_args(argc, argv);
-  struct output_files of(pars.structural_base.c_str(),pars.um_base.c_str());
   
+  if( pars.bwatype == "aln" )
+    {
+      //This is what we did for Rogers et al.
+      return process_aln(pars);
+    }
+
+  return 0;
+}
+
+int process_aln( const process_mapping_params & pars )
+{
+  struct output_files of(pars.structural_base.c_str(),pars.um_base.c_str());
   bamreader reader(pars.bamfile.c_str());
 
   if ( ! reader ) {
