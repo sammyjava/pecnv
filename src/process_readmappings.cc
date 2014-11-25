@@ -271,13 +271,20 @@ process_mapping_params parse_rmappings_args(int argc, char ** argv)
     ("bamfile,b",value<string>(&rv.bamfile),"BAM file name (required)")
     ("structural,s",value<string>(&rv.structural_base),"Prefix for output files names for divergent, parallel, unlinked reads (required)")
     ("umulti,u",value<string>(&rv.um_base),"Prefix for output file names for unique/repetitive read pairs")
-    ("bwatype,B",value<string>(&rv.bwatype)->default_value("aln"),"Method used for bwa.  Currently, only \"bwa aln\" output is supported")
     ;
 
-  variables_map vm;
-  store(parse_command_line(argc, argv, desc), vm);
-  notify(vm);
+  options_description hidden("Hidden options.  These are for the future, not now.");
+  hidden.add_options()
+    ("bwatype,B",value<string>(&rv.bwatype)->default_value(string("aln")),"Method used for bwa.  Currently, only \"bwa aln\" output is supported")
+    ;
 
+  options_description all("All options");
+  all.add(desc).add(hidden);
+
+  variables_map vm;
+  store(parse_command_line(argc, argv, all), vm);
+  notify(vm);
+  cerr << "bwatype = " << rv.bwatype << '\n';
   if( argc == 1 || 
       vm.count("help") ||
       !vm.count("bamfile") ||
