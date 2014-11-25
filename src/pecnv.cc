@@ -3,6 +3,7 @@
 #include <process_readmappings.hpp>
 #include <cluster_cnv.hpp>
 #include <mdist.hpp>
+#include <orphan.hpp>
 #include <algorithm>
 #include <cstring>
 #include <iostream>
@@ -50,6 +51,11 @@ int main( int argc, char ** argv )
       auto x = strip_argv(argc,argv,argv[1]);
       teclust_main(x - argv, argv);
     }
+  else if ( strcmp(argv[1],"orphan") == 0 )
+    {
+      auto x = strip_argv(argc,argv,argv[1]);
+      orphan_main(x - argv, argv);
+    }
   else if( strcmp(argv[1],"citation") == 0 )
     {
       citation(0);
@@ -69,6 +75,7 @@ void usage(int status)
        << "\tProcessing data in BAM files:\n"
        << "\t\tprocess - collect unusual read pairs from BAM file\n"
        << "\t\tmdist - estimate insert size distribution from BAM file\n"
+       << "\t\torphan - collect \"orphan\" reads from BAM files.  An orphan is a mapped read whose pair is unmapped\n"
        << "\tClustering data collected from BAM files:\n"
        << "\t\tcnvclust - perform CNV clustering based on results from process step\n"
        << "\t\tteclust - perform TE clustering based on results from process step\n"
