@@ -24,7 +24,7 @@ int orphan_main(int argc, char ** argv)
 {
   string bamfile,outfile,sampleid;
 
-  options_description desc("pecnv orphan: extract orphaned reads from a BAM file");
+  options_description desc("pecnv orphan: extract orphaned reads from a BAM file.");
   desc.add_options()
     ("help,h","Produce help message")
     ("bamfile,b",value<string>(&bamfile),"BAM file to scan")
