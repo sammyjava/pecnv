@@ -105,7 +105,6 @@ vector<clusteredEvent> parseClusters(const string & clusters,const teclust_param
 {
   vector<clusteredEvent> cEs;
   istringstream in(clusters);
-  string temp;
   //Assuming BEDPE input now, so no more header
   //getline(in,temp);//get rid of header
   while(!in.eof()) //read records
