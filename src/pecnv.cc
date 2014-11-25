@@ -90,7 +90,7 @@ void citation(int status)
        << "The CNV clustering methods are described in:\n\n"
        << "\tRogers, R. L.,J. M. Cridland, L. Shao, T. T. Hu, P. Andolfatto and K. R. Thornton (2014) Landscape of standing variation for tandem duplications in Drosophila yakuba and Drosophila simulans.  Molecular Biology and Evolution 31: 1750-1766 PMID 24710518\n\n"
        << "The TE detection methods are described in:\n\n"
-       << "\tCridland, J.M., S.J. MacDonald, A.D. Long, and K.R Thornton (2013) Abundance and Distribution of Transposable Elements in Two Drosophila QTL Mapping Resources  Molecular Biology and Evolution 30: 2311-2327. PMID 23883524"
+       << "\tCridland, J.M., S.J. MacDonald, A.D. Long, and K.R Thornton (2013) Abundance and Distribution of Transposable Elements in Two Drosophila QTL Mapping Resources.  Molecular Biology and Evolution 30: 2311-2327. PMID 23883524"
        << endl;
   exit(status);
 }
