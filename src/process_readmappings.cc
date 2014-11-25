@@ -284,7 +284,7 @@ process_mapping_params parse_rmappings_args(int argc, char ** argv)
   variables_map vm;
   store(parse_command_line(argc, argv, all), vm);
   notify(vm);
-  cerr << "bwatype = " << rv.bwatype << '\n';
+
   if( argc == 1 || 
       vm.count("help") ||
       !vm.count("bamfile") ||
