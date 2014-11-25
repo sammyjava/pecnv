@@ -26,7 +26,7 @@ int orphan_main(int argc, char ** argv)
   desc.add_options()
     ("help,h","Produce help message")
     ("bamfile,b",value<string>(&bamfile),"BAM file to scan")
-    ("outfile,o",value<string>(&outfile),"Output file.  This will be a gzipped bed files, unless stdout is given as the option, in which case the output will be written to the STDOUT stream")
+    ("outfile,o",value<string>(&outfile),"Output file.  This will be a gzipped bed file, unless stdout is given as the option, in which case the output will be written to the STDOUT stream")
     ("sampleid,s",value<string>(&sampleid)->default_value("sample"),"Identifier for the sample")
     ;
 
