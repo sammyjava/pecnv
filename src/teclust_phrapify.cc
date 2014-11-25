@@ -96,7 +96,6 @@ istream & clusteredEvent::read_bed(istream & in)
 
 istream & operator>>(istream & in, clusteredEvent & ce)
 {
-  //return ce.read(in);
   return ce.read_bed(in);
 }
 
@@ -105,9 +104,7 @@ vector<clusteredEvent> parseClusters(const string & clusters,const teclust_param
 {
   vector<clusteredEvent> cEs;
   istringstream in(clusters);
-  string temp;
   //Assuming BEDPE input now, so no more header
-  //getline(in,temp);//get rid of header
   while(!in.eof()) //read records
     {
       clusteredEvent e;
