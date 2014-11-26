@@ -13,7 +13,12 @@ output_files::output_files(const char * structural_base, const char * um_base) :
   structural_sam_fn(structural_base),
   um_u_fn(um_base),
   um_m_fn(um_base),
-  um_sam_fn(um_base)
+  um_sam_fn(um_base),
+  structural(nullptr),
+  um_u(nullptr),
+  um_m(nullptr),
+  structural_sam(nullptr),
+  um_sam(nullptr)
 {
   structural_fn += ".csv.gz";
   structural_sam_fn += ".sam.gz";
