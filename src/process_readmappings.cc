@@ -34,7 +34,6 @@ using namespace std;
 using namespace boost::program_options;
 using namespace Sequence;
 
-using APAIR = pair<bamrecord,bamrecord>;
 using readbucket = unordered_map<string, bamrecord>; //name, alignment
 
 struct output_files
