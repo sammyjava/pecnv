@@ -7,6 +7,20 @@
 #include <string>
 #include <zlib.h>
 
+struct output_files
+{
+  //enum MAPTYPE {DIV,PAR,UL,UMU,UMM};
+  std::string structural_fn,structural_sam_fn,
+    um_u_fn,um_m_fn,um_sam_fn;
+
+  gzFile structural,um_u,um_m,
+    structural_sam,um_sam;
+
+  output_files(const char * structural_base, const char * um_base);
+  //closes all the gzFiles
+  ~output_files();
+};
+
 using readbucket = std::unordered_map<std::string, Sequence::bamrecord>; //name, alignment
 
 std::string toSAM(const Sequence::bamrecord & b,

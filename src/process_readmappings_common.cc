@@ -8,6 +8,64 @@
 using namespace std;
 using namespace Sequence;
 
+output_files::output_files(const char * structural_base, const char * um_base) :
+  structural_fn(structural_base),
+  structural_sam_fn(structural_base),
+  um_u_fn(um_base),
+  um_m_fn(um_base),
+  um_sam_fn(um_base)
+{
+  structural_fn += ".csv.gz";
+  structural_sam_fn += ".sam.gz";
+  um_u_fn += "_u.csv.gz";
+  um_m_fn += "_m.csv.gz";
+  um_sam_fn += ".sam.gz";
+  
+  structural = gzopen(structural_fn.c_str(),"w");
+  if ( structural == NULL ) {
+    cerr << "Error, could not open " << structural_fn
+	 << " for writing\n";
+    exit(1);
+  }
+  
+  structural_sam = gzopen(structural_sam_fn.c_str(),"w");
+  if ( structural_sam == NULL ) {
+    cerr << "Error, could not open " << structural_sam_fn
+	 << " for writing\n";
+    exit(1);
+    }
+  
+  um_u = gzopen(um_u_fn.c_str(),"w");
+  if ( um_u == NULL ) {
+    cerr << "Error, could not open " << um_u_fn
+	   << " for writing\n";
+    exit(1);
+  }
+  
+  um_m = gzopen(um_m_fn.c_str(),"w");
+  if ( um_m == NULL ) {
+    cerr << "Error, could not open " << um_m_fn
+	 << " for writing\n";
+    exit(1);
+  }
+  
+  um_sam = gzopen(um_sam_fn.c_str(),"w");
+  if ( um_sam == NULL ) {
+    cerr << "Error, could not open " << um_sam_fn
+	 << " for writing\n";
+    exit(1);
+  }
+}
+
+output_files::~output_files()
+{
+  gzclose(structural);
+  gzclose(structural_sam);
+  gzclose(um_u);
+  gzclose(um_m);
+  gzclose(um_sam);
+}
+
 string toSAM(const bamrecord & b,
 	     const bamreader & reader)
 {
