@@ -34,8 +34,6 @@ using namespace std;
 using namespace boost::program_options;
 using namespace Sequence;
 
-using readbucket = unordered_map<string, bamrecord>; //name, alignment
-
 struct output_files
 {
   enum MAPTYPE {DIV,PAR,UL,UMU,UMM};
@@ -124,10 +122,6 @@ void evalUM(const bamrecord & b1,
 	    gzFile uout, gzFile mout,
 	    gzFile SAMout);
 
-void updateBucket( readbucket & rb, bamrecord & b, 
-		   gzFile csvfile, gzFile samfile,
-		   const char * maptype,
-		   const bamreader & reader );
 
 struct process_mapping_params
 {
@@ -540,91 +534,6 @@ void outputM( gzFile gzout,
       cerr << "Error: gzwrite error encountered at line " << __LINE__ 
 	   << " of " << __FILE__ << '\n';
       exit(1);
-    }
-}
-
-void updateBucket( readbucket & rb, bamrecord & b, 
-		   gzFile csvfile, gzFile samfile,
-		   const char * maptype,
-		   const bamreader & reader )
-{
-  string n = editRname(b.read_name());
-  auto i = rb.find(n);
-  if(i == rb.end())
-    {
-      rb.insert( make_pair(n, std::move(b)) );
-    }
-  else //We've got our pair, so write it out
-    {
-      //ostringstream o;
-      if(i->second.refid() > reader.ref_cend()-reader.ref_cbegin())
-	{
-	  cerr << "Error: reference ID number : "<< i->second.refid()
-	       << " is not present in the BAM file header. "
-	       << " Line " << __LINE__ << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      if(b.refid() > reader.ref_cend()-reader.ref_cbegin())
-	{
-	  cerr << "Error: reference ID number : "<< b.refid()
-	       << " is not present in the BAM file header. "
-	       << " Line " << __LINE__ << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      auto REF = reader.ref_cbegin()+i->second.refid();
-      if ( gzwriteCstr( csvfile,editRname(i->second.read_name() ) ) <= 0 )
-	{
-	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      if ( gzwriteCstr( csvfile,REF->first ) <= 0 )
-	{
-	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      REF = reader.ref_cbegin()+b.refid();
-      if ( gzwriteCstr( csvfile,REF->first ) <= 0 )
-	{
-	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      if( gzputs( csvfile, maptype ) <= 0 )
-	{
-	  cerr << "Error: gzputs error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      alnInfo a1(i->second),a2(b);
-      if( a1.write(csvfile) <= 0 )
-	{
-	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      if( a2.write(csvfile) <= 0 )
-	{
-	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-	       << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      string SAM = toSAM(b,reader);
-      if(!gzwrite(samfile,SAM.c_str(),SAM.size()))
-	{
-	  cerr << "Error: gzwrite error at line "
-	       << __LINE__ << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      SAM = toSAM(i->second,reader);
-      if(!gzwrite(samfile,SAM.c_str(),SAM.size()))
-	{
-	  cerr << "Error: gzwrite error at line "
-	       << __LINE__ << " of " << __FILE__ << '\n';
-	  exit(1);
-	}
-      rb.erase(i);
     }
 }
 
