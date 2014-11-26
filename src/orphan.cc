@@ -14,6 +14,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <map>
+#include <iostream>
 #include <zlib.h>
 
 using namespace std;
