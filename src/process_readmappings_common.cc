@@ -38,7 +38,7 @@ output_files::output_files(const char * structural_base, const char * um_base) :
     cerr << "Error, could not open " << structural_sam_fn
 	 << " for writing\n";
     exit(1);
-    }
+  }
   
   um_u = gzopen(um_u_fn.c_str(),"w");
   if ( um_u == NULL ) {
