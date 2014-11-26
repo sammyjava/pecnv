@@ -26,6 +26,7 @@
 #include <common.hpp>
 #include <intermediateIO.hpp>
 #include <file_common.hpp>
+#include <process_readmappings_common.hpp>
 #include <zlib.h>
 
 
@@ -128,9 +129,6 @@ void updateBucket( readbucket & rb, bamrecord & b,
 		   gzFile csvfile, gzFile samfile,
 		   const char * maptype,
 		   const bamreader & reader );
-
-string toSAM(const bamrecord & b,
-	     const bamreader & reader);
 
 struct process_mapping_params
 {
@@ -494,22 +492,6 @@ void outputU( gzFile gzout,
 	   << " of " << __FILE__ << '\n';
       exit(1);
     }
-  // obuffer << name << '\t'
-  // 	  << r.mapq() << '\t'
-  // 	  << REF->first << '\t'
-  // 	  << r.pos() << '\t'
-  // 	  << r.pos() + alignment_length(r) - 1 << '\t'
-  // 	  << r.flag().qstrand << '\t'
-  // 	  << mismatches(r) << '\t'
-  // 	  << ngaps(r) << '\n'; 
-
-  // if(!gzwrite(gzout,obuffer.str().c_str(),obuffer.str().size()))
-  //   {
-  //     cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-  // 	   << " of " << __FILE__ << '\n';
-  //     exit(1);
-  //   }
-
   string s = toSAM(r,reader);
   if(!gzwrite(gzoutSAM,s.c_str(),s.size()))
     {
@@ -552,22 +534,6 @@ void outputM( gzFile gzout,
 	       << " of " << __FILE__ << '\n';
 	  exit(1);
 	}
-      // ostringstream out;
-      // out << name << '\t' 
-      // 	  << r.mapq() << '\t'
-      // 	  << mpos[i].chrom << '\t'
-      // 	  << mpos[i].start << '\t'
-      // 	  << mpos[i].stop << '\t'
-      // 	  << mpos[i].strand << '\t'
-      // 	  << mpos[i].mm << '\t'
-      // 	  << mpos[i].gap << '\n';
-
-      // if(!gzwrite(gzout,out.str().c_str(),out.str().size()))
-      // 	{
-      // 	  cerr << "Error: gzwrite error encountered at line " << __LINE__ 
-      // 	       << " of " << __FILE__ << '\n';
-      // 	  exit(1);
-      // 	}
     }
   string s = toSAM(r,reader);
   if(!gzwrite(gzoutSAM,s.c_str(),s.size()))
@@ -645,32 +611,6 @@ void updateBucket( readbucket & rb, bamrecord & b,
 	       << " of " << __FILE__ << '\n';
 	  exit(1);
 	}
-      // o << editRname(i->second.read_name()) << '\t'
-      // 	<< i->second.mapq() << '\t'
-      // 	<< REF->first << '\t'
-      // 	<< i->second.pos() << '\t'
-      // 	<< i->second.pos() + alignment_length(i->second) - 1 << '\t'
-      // 	<< i->second.flag().qstrand << '\t'
-      // 	<< mismatches(i->second) << '\t'
-      // 	<< ngaps(i->second) << '\t'
-      // 	<< maptype << '\t';
-      // REF = reader.ref_cbegin()+b.refid();
-      // //Second read data
-      // o << b.mapq() << '\t'
-      // 	<< REF->first << '\t'
-      // 	<< b.pos() << '\t'
-      // 	<< b.pos() + alignment_length(b) - 1 << '\t'
-      // 	<< b.flag().qstrand << '\t'
-      // 	<< mismatches(b) << '\t'
-      // 	<< ngaps(b) << '\t'
-      // 	<< maptype << '\n';
-      // if(! gzwrite( csvfile,o.str().c_str(),o.str().size() ) )
-      // 	{
-      // 	  cerr << "Error: gzwrite error at line "
-      // 	       << __LINE__ << " of file "
-      // 	       << __FILE__ << '\n';
-      // 	  exit(1);
-      // 	}
       string SAM = toSAM(b,reader);
       if(!gzwrite(samfile,SAM.c_str(),SAM.size()))
 	{
@@ -689,38 +629,3 @@ void updateBucket( readbucket & rb, bamrecord & b,
     }
 }
 
-string toSAM(const bamrecord & b,
-	     const bamreader & reader)
-{
-  if(b.refid() > reader.ref_cend()-reader.ref_cbegin())
-    {
-      cerr << "Error: refID " << b.refid()
-	   << " does not exist in BAM header. Line "
-	   << __LINE__ << " of " << __FILE__ << '\n';
-    }
-  if(b.next_refid() > reader.ref_cend()-reader.ref_cbegin())
-    {
-      cerr << "Error: next_refID " << b.next_refid()
-	   << " does not exist in BAM header. Line "
-	   << __LINE__ << " of " << __FILE__ << '\n';
-    }
-  ostringstream buffer;
-  samflag f(b.flag());
-  bool um = f.query_unmapped,mum=f.mate_unmapped;
-  buffer << b.read_name() << '\t'
-	 << b.flag() << '\t'
-	 << (!um ? (reader.ref_cbegin()+b.refid())->first : std::string("*"))<< '\t'
-	 << b.pos()+1 << '\t'
-	 << b.mapq() << '\t'
-	 << b.cigar() << '\t'
-	 << (!mum ? (reader.ref_cbegin()+b.next_refid())->first : std::string("*") )<< '\t'
-	 << b.next_pos()+1 << '\t'
-	 << ((!um && !mum) ? b.tlen() : 0)<< '\t'
-	 << b.seq() << '\t';
-  std::for_each(b.qual_cbegin(),b.qual_cend(),[&](const char & ch) {
-      buffer << char(ch+33);
-    });
-  buffer << '\t'
-	 << b.allaux() << '\n';
-  return buffer.str();
-}
