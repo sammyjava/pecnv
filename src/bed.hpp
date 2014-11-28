@@ -12,12 +12,12 @@ struct BED6
   std::int32_t start,stop,score;
   char strand;
   //In order, these are what you exped in a BED6
-  BED6( const std::string,
-	const std::int32_t,
-	const std::int32_t,
-	const std::string, 
-	const std::int32_t,
-	const char );
+  BED6( const std::string &,
+	std::int32_t,
+	std::int32_t,
+	const std::string &, 
+	std::int32_t,
+	char );
   std::ostream & print(std::ostream & o) const;
 };
 

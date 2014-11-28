@@ -2,13 +2,13 @@
 #include<iostream>
 using namespace std;
 
-BED6::BED6( const std::string __chrom,
-	    const std::int32_t __start,
-	    const std::int32_t __stop,
-	    const std::string __name, 
-	    const std::int32_t __score,
-	    const char __strand ) : chrom( move(__chrom) ),
-  name( move(__name) ),
+BED6::BED6( const std::string & __chrom,
+	    std::int32_t __start,
+	    std::int32_t __stop,
+	    const std::string & __name, 
+	    std::int32_t __score,
+	    char __strand ) : chrom( __chrom ),
+  name( __name ),
   start( move(__start) ),
   stop( move(__stop) ),
   score( move(__score) ),
